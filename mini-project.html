@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Portal</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #70587c;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Main Card Container with enhanced glassmorphism depth */
+        .card {
+            background-color: #c8b8db;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), 
+                        0 1px 3px rgba(0, 0, 0, 0.05);
+            width: 100%;
+            max-width: 420px;
+            padding: 40px 30px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        h2 {
+            color: #593d3b;
+            font-size: 28px;
+            margin-bottom: 25px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #d4c5b9;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #333;
+            outline: none;
+            background-color: #ffffff;
+            transition: all 0.25s ease;
+        }
+
+        input:focus {
+            border-color: #593d3b;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(89, 61, 59, 0.15);
+            transform: translateY(-1px);
+        }
+
+        /* Buttons with scale-up active states */
+        .btn {
+            width: 100%;
+            background-color: #7d4f50;
+            color: #fffcf7;
+            border: none;
+            padding: 14px;
+            border-radius: 8px;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-weight: 600;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 10px rgba(89, 61, 59, 0.2);
+        }
+
+        .btn:hover {
+            background-color: #442d2b;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(89, 61, 59, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        /* Secondary Logout Button variant */
+        .btn-logout {
+            background-color: transparent;
+            border: 2px solid #593d3b;
+            color: #593d3b;
+            box-shadow: none;
+        }
+        .btn-logout:hover {
+            background-color: #593d3b;
+            color: #fffcf7;
+            box-shadow: 0 4px 12px rgba(89, 61, 59, 0.15);
+        }
+
+        /* Footer links */
+        .footer-text {
+            margin-top: 25px;
+            font-size: 14px;
+            color: #593d3b;
+        }
+
+        .footer-text a {
+            color: #4a3321;
+            text-decoration: none;
+            font-weight: 700;
+            position: relative;
+            display: inline-block;
+        }
+
+        .footer-text a::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            transform: scaleX(0);
+            height: 2px;
+            bottom: -2px;
+            left: 0;
+            background-color: #4a3321;
+            transform-origin: bottom right;
+            transition: transform 0.25s ease-out;
+        }
+
+        .footer-text a:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+
+        /* Dashboard modern grid cards styling */
+        .dashboard-info h3 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #593d3b;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .data-badge {
+            background: rgba(255, 252, 247, 0.6);
+            padding: 12px 16px;
+            border-radius: 8px;
+            text-align: left;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            transition: transform 0.2s ease;
+        }
+
+        .data-badge:hover {
+            transform: translateX(4px);
+            background: rgba(255, 252, 247, 0.9);
+        }
+
+        .data-badge strong {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #7d5e5c;
+            margin-bottom: 2px;
+        }
+
+        .data-badge span {
+            font-size: 15px;
+            color: #2b1a0e;
+            font-weight: 600;
+        }
+
+        /* View Switching Logic with Slide/Fade Keyframes */
+        .view {
+            display: none;
+            opacity: 0;
+            transform: translateY(15px);
+        }
+        
+        .view.active {
+            display: block;
+            animation: slideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loginView" class="card view active">
+        <h2>Student Login</h2>
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <input type="email" id="loginEmail" placeholder="Email" value="maryrayala5@gmail.com" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="loginPassword" placeholder="Password" value="mini123" required>
+            </div>
+            <button type="submit" class="btn">Login</button>
+        </form>
+        <p class="footer-text">Don't have account? <a href="#" onclick="switchView('signupView')">Signup</a></p>
+    </div>
+
+    <div id="signupView" class="card view">
+        <h2>Student Signup</h2>
+        <form id="signupForm" onsubmit="handleSignup(event)">
+            <div class="form-group">
+                <input type="text" id="signupName" placeholder="Name" value="R.Mary" required>
+            </div>
+            <div class="form-group">
+                <input type="text" id="signupRoll" placeholder="Roll No" value="07" required>
+            </div>
+            <div class="form-group">
+                <input type="text" id="signupCourse" placeholder="Course" value="BCA" required>
+            </div>
+            <div class="form-group">
+                <input type="email" id="signupEmail" placeholder="Email" value="maryrayala5@gmail.com" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="signupPassword" placeholder="Password" value="mini123" required>
+            </div>
+            <button type="submit" class="btn">Signup</button>
+        </form>
+        <p class="footer-text">Already have account? <a href="#" onclick="switchView('loginView')">Login</a></p>
+    </div>
+
+    <div id="dashboardView" class="card view">
+        <h2>Student Dashboard</h2>
+        <div class="dashboard-info">
+            <h3 id="dashWelcome">Welcome Student</h3>
+            
+            <div class="grid-container">
+                <div class="data-badge">
+                    <strong>Roll Number</strong>
+                    <span id="dashRoll">-</span>
+                </div>
+                <div class="data-badge">
+                    <strong>Enrolled Course</strong>
+                    <span id="dashCourse">-</span>
+                </div>
+                <div class="data-badge">
+                    <strong>Email Address</strong>
+                    <span id="dashEmail">-</span>
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-logout" onclick="handleLogout()">Logout</button>
+    </div>
+
+    <script>
+        let studentData = null;
+
+        function switchView(viewId) {
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            const targetView = document.getElementById(viewId);
+            targetView.classList.add('active');
+        }
+
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const emailInput = document.getElementById('loginEmail').value;
+            const passwordInput = document.getElementById('loginPassword').value;
+
+            if (studentData) {
+                if (emailInput === studentData.email && passwordInput === studentData.password) {
+                    populateDashboard(studentData.name, studentData.roll, studentData.course, studentData.email);
+                    switchView('dashboardView');
+                } else {
+                    alert("Invalid email or password! Please try again.");
+                }
+            } else {
+                if (emailInput === "maryrayala5@gmail.com" && passwordInput === "mini123") {
+                    populateDashboard("R.Mary", "07", "BCA", emailInput);
+                    switchView('dashboardView');
+                } else {
+                    alert("User not found. Try using the preset credentials or signing up first!");
+                }
+            }
+        }
+
+        function handleSignup(event) {
+            event.preventDefault();
+            
+            studentData = {
+                name: document.getElementById('signupName').value,
+                roll: document.getElementById('signupRoll').value,
+                course: document.getElementById('signupCourse').value,
+                email: document.getElementById('signupEmail').value,
+                password: document.getElementById('signupPassword').value
+            };
+
+            populateDashboard(studentData.name, studentData.roll, studentData.course, studentData.email);
+            switchView('dashboardView');
+        }
+
+        function populateDashboard(name, roll, course, email) {
+            document.getElementById('dashWelcome').innerText = `Welcome, ${name}`;
+            document.getElementById('dashRoll').innerText = roll;
+            document.getElementById('dashCourse').innerText = course;
+            document.getElementById('dashEmail').innerText = email;
+        }
+
+        function handleLogout() {
+            document.getElementById('loginPassword').value = "";
+            switchView('loginView');
+        }
+    </script>
+</body>
+</html>
